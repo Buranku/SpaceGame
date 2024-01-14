@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -29,7 +31,7 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	public JframeGraphics gui;
-	public static Pelaaja pelaaja; 
+	public static Pelaaja pelaaja;
 	public static Timer ajastin;
 	public int ticks = 0;
 	public Dimension dim;
@@ -41,17 +43,32 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 	public static int shootingWait;
 	public static ArrayList<Integer> scores;
 	public Random rand;
-	public int speed;
+	public static int speed;
 	public static boolean vaikeusValikko;
 	public int vaikeusPisteet;
 	public int bulletSpeed;
-	
+	private long lastShotTime = 0; // Line 50
+	private void vaikeudenLisays() {
+		Timer timer = new Timer(10000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				double decreaseFactor = 1 - (Math.log(ticks + 1) / 100.0);
+				if (decreaseFactor < 0.05)
+					decreaseFactor = 0.05;
+				speed *= decreaseFactor;
+				if(bulletSpeed < 20)
+				bulletSpeed += 1;
+				ticks++;
+			}
+		});
+		timer.start();
+	}
+
 	/**
 	 * alustaa uuden laudan, attribuutteja,
 	 * sisaltaa keylistenerit
 	 */
 	public Peli() {
-		
 		Peli.ajastin = new Timer(20, this);
 		dim = Toolkit.getDefaultToolkit().getScreenSize();
 		leveys = dim.width;
@@ -63,9 +80,9 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 		vaikeusValikko = true;
 		vaikeusPisteet = 100;
 		bulletSpeed = 8;
-		rand = new Random(192837465);
-		scores = new ArrayList<Integer>();
-		JFrame frame = new JFrame("Galaga");
+		rand = new Random(System.currentTimeMillis());
+		scores = new ArrayList<>();
+		JFrame frame = new JFrame("Space Game");
 		this.gui = new JframeGraphics();
 		frame.getContentPane().add(gui);
 		frame.addKeyListener(new KeyListener() {
@@ -73,59 +90,63 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
 				if(vaikeusValikko) {
-					if(key == KeyEvent.VK_1) {
-						speed = 50;
-						vaikeusPisteet = 50;
-						bulletSpeed = 7;
-						vaikeusValikko = false;
+					switch (key) {
+						case KeyEvent.VK_1:
+							speed = 50;
+							vaikeusPisteet = 50;
+							bulletSpeed = 7;
+							vaikeusValikko = false;
+							break;
+						case KeyEvent.VK_2:
+							speed = 40;
+							vaikeusPisteet = 100;
+							bulletSpeed = 8;
+							vaikeusValikko = false;
+							break;
+						case KeyEvent.VK_3:
+							speed = 30;
+							vaikeusPisteet = 175;
+							bulletSpeed = 10;
+							vaikeusValikko = false;
+							break;
+						case KeyEvent.VK_4:
+							speed = 20;
+							vaikeusPisteet = 250;
+							bulletSpeed = 12;
+							vaikeusValikko = false;
+							break;
 					}
-					else if(key == KeyEvent.VK_2) {
-						speed = 40;
-						vaikeusPisteet = 100;
-						bulletSpeed = 8;
-						vaikeusValikko = false;
+				}
+				switch (key) {
+					case KeyEvent.VK_UP:
+						Peli.pelaaja.setLiikeY(-8);
+						break;
+					case KeyEvent.VK_DOWN:
+						Peli.pelaaja.setLiikeY(8);
+						break;
+					case KeyEvent.VK_LEFT:
+						Peli.pelaaja.setLiikeX(-8);
+						break;
+					case KeyEvent.VK_RIGHT:
+						Peli.pelaaja.setLiikeX(8);
+						break;
+					case KeyEvent.VK_SPACE:
+					long currentTime = System.currentTimeMillis();
+					if (!ammuttu && currentTime - lastShotTime >= 500) {
+						Peli.ammu();
+						ammuttu = true;
+						lastShotTime = currentTime;
 					}
-					else if(key == KeyEvent.VK_3) {
-						speed = 30;
-						vaikeusPisteet = 175;
-						bulletSpeed = 10;
-						vaikeusValikko = false;
-					}
-					else if(key == KeyEvent.VK_4) {
-						speed = 20;
-						vaikeusPisteet = 250;
-						bulletSpeed = 12;
-						vaikeusValikko = false;
-					}
-				}
-				else {
-					
-				if (key == KeyEvent.VK_UP ) {
-					Peli.pelaaja.setLiikeY(-8);
-				}
-				if (key == KeyEvent.VK_DOWN ) {
-					Peli.pelaaja.setLiikeY(8);
-				}
-				if (key == KeyEvent.VK_LEFT ) {
-					Peli.pelaaja.setLiikeX(-8);
-				}
-				if (key == KeyEvent.VK_RIGHT ) {
-					Peli.pelaaja.setLiikeX(8);
-				}
-				if (key == KeyEvent.VK_SPACE && ammuttu == false) {
-					Peli.ammu();
-					ammuttu = true;
-				}
-				if (key == KeyEvent.VK_ENTER && pelaaja.getElossa()== false) {
-					initialize();
-					
-				}
-				
+					break;
+					case KeyEvent.VK_ENTER:
+						if (!pelaaja.getElossa()) {
+							initialize();
+						}
+						break;
 				}
 			}
-			
+
 			public void keyReleased(KeyEvent e) {
-				//pressed = false;
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN) {
 					Peli.pelaaja.setLiikeY(0);
@@ -137,30 +158,23 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 					ammuttu = false;
 				}
 			}
-			
 			public void keyTyped(KeyEvent e) {}
-			
 		});
+
 		frame.setSize(800, 800);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(true);
 		frame.setLocation(dim.width/2-800/2,dim.height/2-800/2);
-		
 		this.genPelaaja();
 		this.genAliens();
-		
 		ajastin.start();
-
-
-		
-		
+		vaikeudenLisays();
 	}
 	/**
 	 * alustaa pelaajan ja viholliset
 	 */
 	public void initialize() {
-		//this.genPelaaja();
 		pelaaja.setKoordinaatit(400, 400);
 		ticks = 0;
 		pisteet = 0;
@@ -171,18 +185,18 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 		ajastin.start();
 		repaint();
 	}
-	
+
 	/**
 	 * kontrolloi pelaajan ampumisen nopeutta
 	 */
 	public static void ammu() {
 		if(shootingWait==0) {
 			objektiLista.add(new Ammus(pelaaja.getX(), pelaaja.getY(),0,-10));
-		
+
 		}
 		shootingWait = 12;
 	}
-	
+
 	/**
 	 * generoi pelaajan
 	 */
@@ -190,71 +204,31 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 		pelaaja = new Pelaaja(400, 400);
 		objektiLista.add(pelaaja);
 	}
-	
+
 	/**
-	 * generoi viholliset viidesta eri muodostelmasta
+	 * generoi viholliset satunnaisesti
 	 */
  	public void genAliens() {
- 		int r = rand.nextInt(6);
+ 		int r = rand.nextInt(3) + 4;
  		int x;
  		int y;
- 		switch(r) {
- 		case(0):
- 			x = 100;
- 			for (int i = 0; i < 2; i++) {
- 				objektiLista.add(new Vihollinen(x, 100));
- 				x += 100;
- 			}
- 			for (int j = 0; j < 3; j++) {
- 				objektiLista.add(new Vihollinen(x,50));
- 				x += 100;
- 			}
- 			break;
- 		case(1):
- 			x = 100;
- 			y = 50;
- 			for (int i = 0; i < 5; i++) {
- 				objektiLista.add(new Vihollinen(x, y));
- 				x += 100;
- 				y += 50;
- 			}
- 			break;
- 		case(2):
- 			objektiLista.add(new Vihollinen(100, 100));
- 			objektiLista.add(new Vihollinen(500, 100));
- 			objektiLista.add(new Vihollinen(150, 50));
- 			objektiLista.add(new Vihollinen(450, 50));
- 			objektiLista.add(new Vihollinen(250, 100));
- 			break;
- 		case(3):
- 			x = 100;
- 			for (int i = 0; i < 5; i++) {
- 				objektiLista.add(new Vihollinen(x, 100));
- 				x += 100;
- 			}
- 			break;
- 		case(4):
- 			x = 100;
- 			for (int i = 0; i < 5; i++) {
- 				objektiLista.add(new Vihollinen(x, 50));
- 				x += 100;
- 			}
- 			break;
- 		case(5):
- 			x = 100;
- 			y = 300;
- 			for (int i = 0; i < 5; i++) {
- 				objektiLista.add(new Vihollinen(x,y));
- 				x += 100;
- 				y -= 50;
- 			}
- 			break;
- 		}
- 		
- 		
- 		
+		 boolean tooClose;
+		 for (int i = 0; i < r; i++) {
+			 do {
+				 tooClose = false;
+				 x = rand.nextInt(800 - 140 - 57); // subtract the maximum movement and enemy width
+				 y = rand.nextInt(281) + 20; // generates a number between 20 and 300
+				 for (PeliObjekti o : objektiLista) {
+					 if (o instanceof Vihollinen && Math.hypot(o.getX() - x, o.getY() - y) < 60) {
+						 tooClose = true;
+						 break;
+					 }
+				 }
+			 } while (tooClose);
+			 objektiLista.add(new Vihollinen(x, y));
+		 }
  	}
- 	
+
  	/**
  	 * suorittaa pelia ajastimella,
  	 * kutsuu gui:n paivitysta
@@ -264,56 +238,49 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 			this.gui.repaint();
 		}
 		else {
-			
-		ticks++;
-		checkViholliset();
-		vihollisetShooting();
-		this.HitDetection();
-		this.move();
-		if(hp==0) {
-			//objektiLista.remove(objektiLista.indexOf(pelaaja));
-			pelaaja.setElossa(false);
-		}
-			
-		if(vihollisMaara==0) {
-			this.genAliens();
-		}
-		
-
-		if(shootingWait>0) {
-			shootingWait--;
-		}
-		this.gui.repaint();
-		
+			ticks++;
+			checkViholliset();
+			vihollisetShooting();
+			this.HitDetection();
+			this.move();
+			if(hp==0) {
+				pelaaja.setElossa(false);
+			}
+			if(vihollisMaara==0) {
+				this.genAliens();
+			}
+			if(shootingWait>0) {
+				shootingWait--;
+			}
+			this.gui.repaint();
 		}
 	}
-	
+
 	/**
 	 * vihollisten ammuskelua saateleva metodi,
 	 * ampuminen maaraytyy satunnaismuuttujan ja nopeus-olion avulla
 	 */
 	public void vihollisetShooting() {
-		
+
 		ArrayList<Integer> indeksit = new ArrayList<Integer>();
-		
+
 		for(int i = 0; i < objektiLista.size(); i++) {
 			PeliObjekti o = objektiLista.get(i);
-			
+
 			if(o instanceof Vihollinen) {
 				if(((Vihollinen)o).getAmpuminen()!=0 && ((Vihollinen)o).getAmmuskelu()==false) {
 					((Vihollinen)o).setAmpuminen(rand.nextInt(speed) + speed*3/5);
 					((Vihollinen)o).setAmmuskelu(true);
 				}
-				
+
 				else if(((Vihollinen)o).getAmpuminen()!=0 && ((Vihollinen)o).getAmmuskelu()){
 					((Vihollinen)o).setAmpuminen(((Vihollinen)o).getAmpuminen()-1);
 				}
 				else if(((Vihollinen)o).getAmpuminen()==0 && ((Vihollinen)o).getAmmuskelu()){
-					//objektiLista.add(new AmmusV(o.getX(), o.getY(), 0, 7));
 					indeksit.add(i);
 					((Vihollinen)o).setAmmuskelu(false);
 					((Vihollinen)o).setAmpuminen(-1);
-					
+
 				}
 			}
 		}
@@ -321,7 +288,7 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 			objektiLista.add(new AmmusV(objektiLista.get(i).getX(), objektiLista.get(i).getY(), 0, bulletSpeed));
 		}
 	}
-	
+
 	/**
 	 * tarkistaa elossa olevien vihollisten maaran
 	 */
@@ -331,19 +298,19 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 			if(o instanceof Vihollinen) {
 				a++;
 			}
-			
+
 		}
 		vihollisMaara = a;
 	}
-	
+
 	/**
 	 * tarkistaa ovatko ammukset osuneet vihollisiin tai pelaajaan,
-	 * poistaa osutut viholliset ja laskee osutun pelaajaan hp:ta 
+	 * poistaa osutut viholliset ja laskee osutun pelaajaan hp:ta
 	 */
 	public void HitDetection() {
-		
+
 		ArrayList<Integer> tuhoutuvienIndeksit = new ArrayList<Integer>();
-		
+
 		A: for(int i = 0; i< objektiLista.size(); i++) {
 			for(int j = 0; j< objektiLista.size(); j++) {
 				PeliObjekti a = objektiLista.get(i);
@@ -351,9 +318,7 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 				if(i!=j && !tuhoutuvienIndeksit.contains(objektiLista.indexOf(b)) && !tuhoutuvienIndeksit.contains(objektiLista.indexOf(a))) {
 					if(a instanceof Pelaaja && b instanceof Vihollinen) {
 						if(new Rectangle(a.getX()+15, a.getY()+15, 30, 80).intersects(new Rectangle(b.getX(), b.getY(), 57, 57))){
-							//a.tuhoa();
 							b.tuhoa();
-							//tuhoutuvienIndeksit.add(i);
 							tuhoutuvienIndeksit.add(j);
 							hp -= 1;
 							break A;
@@ -380,26 +345,21 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 				}
 			}
 		}
-		int a = 0;
-		for(int i = 0; i < tuhoutuvienIndeksit.size();i++) {
-			int b = tuhoutuvienIndeksit.get(i);
-			objektiLista.remove(b-a);
-			if(i==0 && tuhoutuvienIndeksit.size()==2) {
-			if(tuhoutuvienIndeksit.get(i)<tuhoutuvienIndeksit.get(i+1)) {
-				a=1;
-			}
-			}
-			
+		Iterator<PeliObjekti> iterator = objektiLista.iterator();
+		int index = 0;
+		while (iterator.hasNext()) {
+    		iterator.next();
+    		if (tuhoutuvienIndeksit.contains(index)) {
+        		iterator.remove();
+    		}
+    		index++;
 		}
-
-		
 	}
-	
+
 	/**
 	 * peliobjektien liikkeit kutsuva metodi
 	 */
 	public void move() {
-		//for (PeliObjekti o : objektiLista) {
 		ArrayList<Integer> tuhoutuvienIndeksit = new ArrayList<Integer>();
 		B: for(int i = 0; i<objektiLista.size(); i++) {
 			PeliObjekti o = objektiLista.get(i);
@@ -412,7 +372,6 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 			else if (o instanceof Ammus) {
 				if (o.getY() + o.getLiikeY() < 0) {
 					o.tuhoa();
-					//objektiLista.remove(o);
 					tuhoutuvienIndeksit.add(i);
 					break B;
 				}
@@ -435,11 +394,11 @@ public class Peli extends JPanel implements KeyListener, ActionListener{
 			objektiLista.remove(i);
 		}
 	}
-	
+
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

@@ -7,17 +7,13 @@ import java.awt.Toolkit;
  * alustaa uuden pelin
  */
 public class Main {
-
 	public static int leveys;
 	public static int korkeus;
 	public static Dimension dim;
-	
-	
 	public static void main(String[] args) {
 		dim = Toolkit.getDefaultToolkit().getScreenSize();
 		leveys = dim.width;
 		korkeus = dim.height;
 		new Peli();
 	}
-
 }

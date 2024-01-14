@@ -6,12 +6,12 @@ package peliObjektit;
  * Mukana myos ampumisen saatelyyn tarvittavat metodit
  */
 public class Vihollinen extends PeliObjekti{
-	
+
 	private final int SET_X;
 	//private final int SET_Y;
 	private boolean VAS;
 
-	
+
 	public Vihollinen(int x, int y) {
 		super(x, y);
 		SET_X = x;
@@ -28,7 +28,7 @@ public class Vihollinen extends PeliObjekti{
 	public boolean getAmmuskelu() {
 		return this.ammuskelu;
 	}
-	
+
 	/**
 	 * setteri ammukselun saatelemiseen
 	 * @param a=true kun ampuminen-muuttujalla asetetaan arvo, muuten false
@@ -36,7 +36,7 @@ public class Vihollinen extends PeliObjekti{
 	public void setAmmuskelu(boolean a) {
 		this.ammuskelu = a;
 	}
-	
+
 	/**
 	 * getteri ampumisen aikavalille
 	 * @return frame lkm minka jlkeen ammutaan
@@ -44,7 +44,7 @@ public class Vihollinen extends PeliObjekti{
 	public int getAmpuminen() {
 		return this.ampuminen;
 	}
-	
+
 	/**
 	 * setteri ampumisen aikavalille
 	 * @param a=frame lkm minka jlkeen ammutaan
@@ -52,7 +52,7 @@ public class Vihollinen extends PeliObjekti{
 	public void setAmpuminen(int a) {
 		this.ampuminen = a;
 	}
-	
+
 	public void liikkuminen() {
 		int liike = 0;
 		int max = this.SET_X +140;
@@ -69,8 +69,8 @@ public class Vihollinen extends PeliObjekti{
 		else  {
 			liike = this.getX()+2;
 		}
-		
+
 		this.x = liike;
 	}
-	
+
 }

@@ -5,8 +5,8 @@ package peliObjektit;
  * Sisaltaa koordinaatit, liikkeet ja elossa olon
  */
 public class PeliObjekti{
-	
-	protected boolean elossa = true;	
+
+	protected boolean elossa = true;
 	protected int x;
 	protected int y;
 	protected int liikeX, liikeY;
@@ -14,21 +14,21 @@ public class PeliObjekti{
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public PeliObjekti(int x, int y, int liikeX, int liikeY) {
 		this.x = x;
 		this.y = y;
 		this.liikeX = liikeX;
 		this.liikeY = liikeY;
 	}
-	/** 
+	/**
 	 * getteri elossaolon tarkistukseen,
 	 * @return true jos elossa, muuten false
 	 */
 	public boolean getElossa() {
 	return elossa;
 	}
-	
+
 	/**
 	 * setteri elossaolon muokkaukseen,
 	 * @param t, true jos elossa
@@ -36,7 +36,7 @@ public class PeliObjekti{
 	public void setElossa(boolean t) {
 		this.elossa = t;
 	}
-	
+
 	/**
 	 * getteri x-koordinaatille
 	 * @return x-koordinaatti
@@ -44,7 +44,7 @@ public class PeliObjekti{
 	public int getX() {
 		return this.x;
 	}
-	
+
 	/**
 	 * getteri y-koordinaatille
 	 * @return y-koordinaatti
@@ -52,7 +52,7 @@ public class PeliObjekti{
 	public int getY() {
 		return this.y;
 	}
-	
+
 	/**
 	 * setteri x-koordinaatille
 	 * @param x
@@ -60,7 +60,7 @@ public class PeliObjekti{
 	public void setX(int x) {
 		this.x = x;
 	}
-	
+
 	/**
 	 * setteri y-koordinatille
 	 * @param y
@@ -68,15 +68,15 @@ public class PeliObjekti{
 	public void setY(int y) {
 		this.y = y;
 	}
-	
+
 	/**
 	 * getteri objektin liikkeelle x-suuntaisesti
-	 * @return 
+	 * @return
 	 */
 	public int getLiikeX() {
 		return this.liikeX;
 	}
-	
+
 	/**
 	 * getteri objektin liikkeelle y-suuntaisesti
 	 * @return
@@ -84,7 +84,7 @@ public class PeliObjekti{
 	public int getLiikeY() {
 		return this.liikeY;
 	}
-	
+
 	/**
 	 * setteri liikkeelle x-suuntaisesti
 	 * @param a
@@ -92,7 +92,7 @@ public class PeliObjekti{
 	public void setLiikeX(int a) {
 		this.liikeX = a;
 	}
-	
+
 	/**
 	 * setteri liikkeelle y-suuntaisesti
 	 * @param b
@@ -100,7 +100,7 @@ public class PeliObjekti{
 	public void setLiikeY(int b) {
 		this.liikeY = b;
 	}
-	
+
 	/**
 	 * setteri liikkeelle
 	 * @param a
@@ -110,7 +110,7 @@ public class PeliObjekti{
 		this.liikeX = a;
 		this.liikeY = b;
 	}
-	
+
 	/**
 	 * setteri molemmille koordinaateille
 	 * @param x-koordinaatti
@@ -120,17 +120,17 @@ public class PeliObjekti{
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	/**
 	 * muuttaa objektin elossa-arvon falseksi
 	 */
 	public void tuhoa() {
 		this.elossa = false;
 	}
-	
+
 	/**
 	 * peliobjektin liikkeet
 	 */
 	public void liikkuminen() {}
-	
+
 }

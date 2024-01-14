@@ -8,4 +8,4 @@ Pelaaja liikkuu nuolinäppäimillä ylös, alas, sivuille.
 Pelaaja ampuu välilyönnillä.
 Pelin voi game over-tilassa aloittaa alusta painamalla enteriä.
 
-![Game Screenshot](images/Game%20Image%201.png)
+![Game Screenshot](Kuvat/Game%20Image%201.png)

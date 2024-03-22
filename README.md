@@ -1,3 +1,20 @@
+Created in Java.
+
+Space Shooter Game
+
+In this game, you try to shoot as many enemies as possible while dodging their bullets.
+
+How to play:
+
+When you start the game, select a difficulty level from 1 to 4.
+Use the arrow keys to move up, down, and sideways.
+Press the spacebar to shoot.
+If you die, you can restart the game by pressing Enter.
+
+
+------------------------
+
+
 Ohjelma on tehty Javalla.
 
 Avaruusalus peli, jossa koitetaan ampua mahdollisimman monta vihollista
